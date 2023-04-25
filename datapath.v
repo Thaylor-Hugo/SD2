@@ -5,7 +5,7 @@
 // Alejandro Larrea - 13791522  
 
 // Modulo que realiza operacoes de load e store, add e sub
-module rf #(
+module datapath #(
     parameter BITS = 63
 ) (
     input clk,
