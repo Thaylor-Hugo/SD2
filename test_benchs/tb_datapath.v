@@ -11,7 +11,7 @@
 //      gtkwave tb_rf.vcd
 
 `timescale 1ns/1ps
-module tb_rf;
+module tb_datapath;
     
     //variaveis de rf
     reg clk = 0; 
@@ -22,8 +22,8 @@ module tb_rf;
     wire [63:0] douta, doutb;
 
     initial begin
-        $dumpfile("tb_rf.vcd");
-        $dumpvars(0,tb_rf);
+        $dumpfile("tb_datapath.vcd");
+        $dumpvars(0,tb_datapath);
     end
 
     always #1 clk = !clk;

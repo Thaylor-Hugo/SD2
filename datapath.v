@@ -4,7 +4,7 @@
 // Felipe Soria - 13864287
 // Alejandro Larrea - 13791522  
 
-// Modulo que realiza operacoes de load e store
+// Modulo que realiza operacoes de load e store, add e sub
 module rf #(
     parameter BITS = 63
 ) (
