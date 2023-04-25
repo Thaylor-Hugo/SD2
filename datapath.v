@@ -25,18 +25,11 @@ wire [BITS:0] valor_regB;
 wire v; // overflow da soma
 wire [BITS:0] mem_read;
 wire [BITS:0] endereco;
-reg load_en;
-reg store_en;
+wire load_en;
+wire store_en;
 
-always @* begin
-    if (enable) begin
-        load_en = load_store;
-        store_en = ~load_store;
-    end else begin
-        load_en = 0;
-        store_en = 0;
-    end
-end
+assign load_en = (enable)? load_store: 0;
+assign store_en = (enable)? ~load_store: 0;
 
 somador somador(dataIn, dataOutB, 1'b1, v, endereco);
 banco_reg banco_reg (clk, load_en, rw, ra, rb, mem_read, valor_regA, valor_regB);
