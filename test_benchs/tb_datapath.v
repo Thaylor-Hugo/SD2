@@ -28,7 +28,7 @@ module tb_datapath;
 
     always #1 clk = !clk;
 
-    rf rf (clk, enable, a, b, din, load_store, w, douta, doutb);
+    datapath datapath (clk, enable, a, b, din, load_store, w, douta, doutb);
 
     initial begin
 
