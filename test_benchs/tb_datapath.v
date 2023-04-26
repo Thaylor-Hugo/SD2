@@ -3,12 +3,13 @@
 // Thaylor Hugo - 13684425 
 // Felipe Soria - 13864287
 // Alejandro Larrea - 13791522  
+// Data: 19/04/23   -> nota: alterado para testar operacoes de add e sub tambem
 
 // Comandos usados na simulacao:
 //      
-//      iverilog -o tb_rf .\test_benchs\tb_rf.v .\ram.v .\rf.v .\somador.v .\banco_reg.v
-//      vvp tb_rf
-//      gtkwave tb_rf.vcd
+//      iverilog -o tb_datapath .\test_benchs\tb_datapath.v .\ram.v .\tb_datapath.v .\somador.v .\banco_reg.v .\mux_two_to_one.v
+//      vvp tb_datapath
+//      gtkwave tb_datapath.vcd
 
 `timescale 1ns/1ps
 module tb_datapath;
@@ -121,6 +122,12 @@ module tb_datapath;
         b = 5'd16;
         a = 5'd27;
         w = 5'd20;
+        
+        #2;
+        op_ula = 1;
+        b = 5'd12;
+        a = 5'd17;
+        w = 5'd21;
 
         // Checa se as operacoes funcionaram pelos valores esperados nos registradores
         // Operacoes de load e store 
@@ -150,6 +157,9 @@ module tb_datapath;
         a=5'd19; // reg[19] = -43
         b=5'd20; // reg[20] = 15
     
+        #2;
+        a=5'd19; // reg[19] = -43
+        b=5'd21; // reg[21] = 0
         #2 $finish;
 
     end
