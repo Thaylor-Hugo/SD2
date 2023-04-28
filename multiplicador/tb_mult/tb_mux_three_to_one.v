@@ -14,7 +14,6 @@ module tb_mux_three_to_one;
         $dumpvars(0,tb_mux_three_to_one);
     end
 
-    assign endereco = {a, b};
     mux_three_to_one mux_three_to_one (op, a, b, c, saida);
 
     initial begin
