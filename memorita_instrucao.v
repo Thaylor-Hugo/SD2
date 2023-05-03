@@ -19,6 +19,6 @@ module memoria_instrucao (
     end  
     
     /* So devolve uma instrucao se o endereco estiver dentro do tamanho da memoria */
-    assign instrucao = (pc[31:0] < 64 )? rom[pc]: 31'd0;
+    assign instrucao = (pc[63:0] < 64 )? rom[pc]: 31'd0;
 
 endmodule
