@@ -7,7 +7,7 @@ module tb_multiplicador;
     reg clk = 0;
     reg [7:0] a, b;
     wire [15:0] result;
-    wire done = 0;
+    wire done;
     integer i; 
     integer j; 
 
