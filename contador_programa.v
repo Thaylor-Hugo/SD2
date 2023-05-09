@@ -1,5 +1,6 @@
 module contador_programa (
     input clock,
+    input reset,
     output [63:0] endereco
 );
     /* Controla o contador de programa (PC) */
@@ -11,7 +12,11 @@ module contador_programa (
         pc <= 64'b0;
     end
 
-    always @(negedge clock) begin
+    always @(posedge reset) begin
+        pc <= 64'b0;
+    end
+
+    always @(negedge clock) begin    
         pc <= prox_pc;
     end
 
