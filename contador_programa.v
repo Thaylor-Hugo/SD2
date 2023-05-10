@@ -20,10 +20,8 @@ module contador_programa (
         pc <= prox_pc;
     end
 
-    always @(pc) begin
-        /* Valor padrao de incremento do PC */
-        prox_pc <= pc + 64'b1;
-    end
+    /* Valor padrao de incremento do PC */
+    assign prox_pc = pc + 64'b1;
 
     assign endereco = pc;
     
