@@ -6,10 +6,10 @@
 
 // ULA em complemento de 2
 module ula #(
-    parameter SLT = 11,
-    parameter EQU = 10,
-    parameter ADD = 01,
-    parameter SUB = 00,
+    parameter SLT = 2'b11,
+    parameter EQU = 2'b10,
+    parameter ADD = 2'b01,
+    parameter SUB = 2'b00,
     parameter BITS = 63) (
     input signed [BITS:0] a, //Entradas em complemento de 2
     input signed [BITS:0] b,
@@ -26,13 +26,13 @@ always @* begin
         ADD: result = a + b;
         EQU:  
             begin
-                if (a == b) resultado = 1;
-                else resultado = 0;    
+                if (a == b) result = 1;
+                else result = 0;    
             end 
         SLT: 
             begin
-                if (a < b) resultado = 1;
-                else resultado = 0;
+                if (a < b) result = 1;
+                else result = 0;
             end 
         default: result = a + b;
     endcase
