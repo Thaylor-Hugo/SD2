@@ -16,7 +16,7 @@ module tb_datapath_instru;
     
     // Entrada do datapath
     reg clk = 0; 
-    reg reset = 0;
+    reg reset;
     reg load_en;
     reg store_en;
     reg [1:0] op_ula;
@@ -39,7 +39,7 @@ module tb_datapath_instru;
 
     always #1 clk = !clk;
 
-    datapath datapath (clk, enable, load_en, store_en, op_ula, operation_type, ula_entry, program_counter);
+    datapath datapath (clk, reset, load_en, store_en, op_ula, operation_type, ula_entry, program_counter);
 
     initial begin
 
@@ -86,7 +86,7 @@ module tb_datapath_instru;
         load_en = 0;
         store_en = 1;
         operation_type = 0;
-        ula_entry = 1;
+        ula_entry = 0;
         op_ula = 2'b01;
         
         #2;
