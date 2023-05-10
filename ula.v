@@ -4,24 +4,42 @@
 // Felipe Soria - 13864287
 // Alejandro Larrea - 13791522  
 
-// Somador/subtrador em complemento de 2 com sinal de overflow
-module somador #(
-    parameter ADD = 1,
-    parameter SUB = 0,
+// ULA em complemento de 2
+module ula #(
+    parameter SLT = 11,
+    parameter EQU = 10,
+    parameter ADD = 01,
+    parameter SUB = 00,
     parameter BITS = 63) (
     input signed [BITS:0] a, //Entradas em complemento de 2
     input signed [BITS:0] b,
-    input op, // Se 1 realiza soma, se 0 realiza subtracao
+    input [1:0] op,
     output v,
-    output [BITS:0] result
+    output reg [BITS:0] result
 );
 
 reg overflow;
 
-assign result = (op == 1) ? a + b: a - b;
+always @* begin
+    case (op)
+        SUB: result = a - b;
+        ADD: result = a + b;
+        EQU:  
+            begin
+                if (a == b) resultado = 1;
+                else resultado = 0;    
+            end 
+        SLT: 
+            begin
+                if (a < b) resultado = 1;
+                else resultado = 0;
+            end 
+        default: result = a + b;
+    endcase
+end
 
 always @* begin
-    // Determina se houve overflow
+    // Determina se houve overflow da add\sub (indeterminado em outras operacoes)
     if (op == 1) begin
         if (a[BITS] == b[BITS]) begin
             if (a[BITS] == 1) begin
