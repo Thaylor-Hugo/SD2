@@ -3,7 +3,7 @@
 // Thaylor Hugo - 13684425 
 // Felipe Soria - 13864287
 // Alejandro Larrea - 13791522  
-// Data: 09/05/23
+// Data: 10/05/23
 
 // Comandos usados na simulacao (estando no diretorio "SD2"):
 //      
@@ -22,9 +22,12 @@ module tb_datapath_instru;
     reg [1:0] op_ula;
     reg operation_type;
     reg ula_entry;
+    reg branch;
+    reg sign;
 
     // Saida do datapath
     wire [63:0] program_counter;
+    wire [31:0] instrucao;
 
     integer i;
 
@@ -39,7 +42,7 @@ module tb_datapath_instru;
 
     always #1 clk = !clk;
 
-    datapath datapath (clk, reset, load_en, store_en, op_ula, operation_type, ula_entry, program_counter);
+    datapath datapath (clk, reset, load_en, store_en, op_ula, operation_type, ula_entry, branch, sign, program_counter, instrucao);
 
     initial begin
 
@@ -53,6 +56,8 @@ module tb_datapath_instru;
         operation_type = 0;
         ula_entry = 0;
         op_ula = 2'b01;
+        branch = 0;
+        sign = 0;
         
         #2; // add 31$ 7$ 21$    ->  reg[31] = 28
         load_en = 1;
@@ -89,6 +94,53 @@ module tb_datapath_instru;
         ula_entry = 0;
         op_ula = 2'b01;
         
+        // instrucoes branch
+
+        #2; // beq 1$ 7$ #3 -> vai pro pc = 10
+        load_en = 0;
+        store_en = 0;
+        operation_type = 1;
+        ula_entry = 1;
+        op_ula = 2'b10;
+        branch = 1;
+        sign = 1;
+        
+        #2; // bne 30$ 31$ #-2 -> vai pro pc = 8
+        load_en = 0;
+        store_en = 0;
+        operation_type = 1;
+        ula_entry = 1;
+        op_ula = 2'b10;
+        
+        #2; // bgt 29$ 30$ #3 -> vai pro pc = 11
+        load_en = 0;
+        store_en = 0;
+        operation_type = 1;
+        ula_entry = 1;
+        op_ula = 2'b11;
+        
+        #2; // blt 0$ $15 #-2  -> vai pro pc = 9
+        load_en = 0;
+        store_en = 0;
+        operation_type = 1;
+        ula_entry = 1;
+        op_ula = 2'b11;
+        
+        #2; // bgtu 28$ 17$ #3  -> vai pro pc = 12
+        load_en = 0;
+        store_en = 0;
+        operation_type = 1;
+        ula_entry = 1;
+        op_ula = 2'b11;
+        sign = 0;
+        
+        #2; // bltu 13$ 30$ #2 -> vai pro pc = 14
+        load_en = 0;
+        store_en = 0;
+        operation_type = 1;
+        ula_entry = 1;
+        op_ula = 2'b11;
+
         #2;
 
         #2 $finish;
@@ -96,7 +148,7 @@ module tb_datapath_instru;
     end
 
     initial begin
-        $monitor("program_counter = %d", program_counter);
+        $monitor("program_counter = %2d | instruction = %b", program_counter, instrucao);
     end
 
 

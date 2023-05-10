@@ -14,11 +14,19 @@ module ula #(
     input signed [BITS:0] a, //Entradas em complemento de 2
     input signed [BITS:0] b,
     input [1:0] op,
+    input sign,
     output v,
     output reg [BITS:0] result
 );
 
 reg overflow;
+
+wire [BITS:0] operando1;
+wire [BITS:0] operando2;
+
+// para operações sem sinal
+assign operando1 = a;
+assign operando2 = b;
 
 always @* begin
     case (op)
@@ -31,8 +39,13 @@ always @* begin
             end 
         SLT: 
             begin
-                if (a < b) result = 1;
-                else result = 0;
+                if (sign) begin
+                    if (a < b) result = 1;
+                    else result = 0;
+                end else begin
+                    if (operando1 < operando2) result = 1;
+                    else result = 0;
+                end
             end 
         default: result = a + b;
     endcase
