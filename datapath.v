@@ -17,9 +17,12 @@ module datapath #(
     input load_en,
     input store_en,
     input [1:0] op_ula,     // verificar no modulo ula
-    input operation_type,   // 0 se mem, 1 se outra
+    input [1:0] operation_type,   // 00 se ula_out, 01 se mem_read, 10 se pc
     input ula_entry,        // 0 se imm_ext, 1 se rs2
     input branch,           // instrução e branch
+    input auipc, 
+    input jal, 
+    input jalr,
     input sign,             // se instruções tem sinal ou nao
 
     output [BITS:0] program_counter,
@@ -40,17 +43,26 @@ wire [4:0] rs2;
 wire [4:0] rd;
 wire [BITS:0] imm_ext;
 wire [11:0] imm;
+wire [19:0] imm_jump;
 
 banco_reg banco_reg (clk, load_en, rd, rs1, rs2, din_reg, valor_regA, valor_regB);
 
 assign rs1 = instrucao[19:15];
 assign rs2 = instrucao[24:20];
 assign rd = instrucao[11:7];
-assign imm = (store_en)? {instrucao[31:25], instrucao[11:7]} : (branch)? {instrucao[31], instrucao[7], instrucao[30:25], instrucao[11:8]} : instrucao[31:20];
-assign imm_ext = (imm[8])? {{52{1'b1}}, imm} : {52'b0, imm};
+assign imm = (store_en)? {instrucao[31:25], instrucao[11:7]} : 
+             (branch)? {instrucao[31], instrucao[7], instrucao[30:25], instrucao[11:8]} : 
+             instrucao[31:20];
+
+assign imm_jump = (auipc)? instrucao[31:12] : 
+                    {instrucao[31], instrucao[19:12], instrucao[20], instrucao[30:21]};
+
+assign imm_ext = (auipc || jal)? ((imm_jump[19])? {{44{1'b1}}, imm_jump} : {44'b0, imm_jump}) :
+                 (imm[11])? {{52{1'b1}}, imm} : {52'b0, imm};
 
 // Contador de programa e instrução
 wire [BITS:0] pc;
+wire [BITS:0] stored_pc;
 wire [31:0] instrucao;
 reg [31:0] ri; // registrador que salva instrução
 
@@ -58,7 +70,7 @@ always @(instrucao) begin
     ri = instrucao;
 end
 
-contador_programa contador_programa (clk, reset, branch_cond, imm_ext, pc);
+contador_programa contador_programa (clk, reset, branch_cond, auipc, jal, jalr, valor_regA, imm_ext, pc, stored_pc);
 memoria_instrucao memoria_instrucao (pc, instrucao);
 
 assign program_counter = pc;    // output
@@ -72,7 +84,7 @@ wire signed [BITS:0] din_reg;
 wire signed [BITS:0] din_ula2;
 
 // Decide entrada do banco de registradores
-mux_two_to_one mux_banco_reg(operation_type, ula_out, mem_read, din_reg);
+mux_three_to_one mux_banco_reg(operation_type, ula_out, mem_read, stored_pc, din_reg);
 
 // Decide entrada da ULA
 mux_two_to_one mux_ula2(ula_entry, valor_regB, imm_ext, din_ula2);
@@ -85,6 +97,8 @@ always @* begin
         if (instrucao[14:12] == 3'b001 || instrucao[14:12] == 3'b101 || instrucao[14:12] == 3'b111) begin
             branch_cond = ~ula_out;
         end else branch_cond = ula_out;
+    end else begin
+        branch_cond = 0;
     end
 end
 

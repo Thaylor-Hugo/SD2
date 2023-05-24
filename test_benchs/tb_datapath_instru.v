@@ -11,6 +11,8 @@
 //      vvp tb_datapath_instru
 //      gtkwave tb_datapath_instru.vcd
 
+// OUTDATED
+
 `timescale 1ns/1ps
 module tb_datapath_instru;
     
