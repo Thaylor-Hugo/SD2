@@ -6,14 +6,22 @@
 
 // ULA em complemento de 2
 module ula #(
-    parameter SLT = 2'b11,
-    parameter EQU = 2'b10,
-    parameter ADD = 2'b01,
-    parameter SUB = 2'b00,
+    parameter NEQ = 4'b1011,
+    parameter SGT = 4'b1010,
+    parameter SRA = 4'b1001,
+    parameter SRL = 4'b1000,
+    parameter AND = 4'b0111,
+    parameter OR = 4'b0110,
+    parameter XOR = 4'b0101,
+    parameter SLL = 4'b0100,
+    parameter SLT = 4'b0011,
+    parameter EQU = 4'b0010,
+    parameter ADD = 4'b0001,
+    parameter SUB = 4'b0000,
     parameter BITS = 63) (
     input signed [BITS:0] a, //Entradas em complemento de 2
     input signed [BITS:0] b,
-    input [1:0] op,
+    input [3:0] op,
     input sign,
     output v,
     output reg [BITS:0] result
@@ -46,6 +54,27 @@ always @* begin
                     if (operando1 < operando2) result = 1;
                     else result = 0;
                 end
+            end
+        SLL: result = a << (b & 5'b11111);
+        XOR: result = a ^ b;
+        OR: result = a | b;
+        AND: result = a & b;
+        SRL: result = a >> (b & 5'b11111);
+        SRA: result = a >>> (b & 5'b11111);
+        SGT:  
+            begin
+                if (sign) begin
+                    if (a > b) result = 1;
+                    else result = 0;
+                end else begin
+                    if (operando1 > operando2) result = 1;
+                    else result = 0;
+                end
+            end
+        NEQ:  
+            begin
+                if (a != b) result = 1;
+                else result = 0;    
             end 
         default: result = a + b;
     endcase
