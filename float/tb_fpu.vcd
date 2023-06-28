@@ -1,0 +1,259 @@
+$date
+	Wed Jun 28 11:26:43 2023
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module tb_fpu $end
+$var wire 1 ! done $end
+$var wire 32 " R [31:0] $end
+$var reg 32 # A [31:0] $end
+$var reg 32 $ B [31:0] $end
+$var reg 1 % clk $end
+$var reg 2 & op [1:0] $end
+$var reg 1 ' reset $end
+$var reg 1 ( start $end
+$scope module fpu $end
+$var wire 32 ) A [31:0] $end
+$var wire 32 * B [31:0] $end
+$var wire 1 % clk $end
+$var wire 1 ! done $end
+$var wire 2 + op [1:0] $end
+$var wire 8 , roundedExp [7:0] $end
+$var wire 1 ' rst $end
+$var wire 1 ( start $end
+$var wire 2 - ula_cmd [1:0] $end
+$var wire 1 . stick $end
+$var wire 1 / start_mult $end
+$var wire 1 0 signOut $end
+$var wire 26 1 roundedFract [25:0] $end
+$var wire 26 2 result_ula [25:0] $end
+$var wire 26 3 normFract [25:0] $end
+$var wire 26 4 fractOfMenorExpShifed [25:0] $end
+$var wire 26 5 fractNormalized [25:0] $end
+$var wire 8 6 expNormalized [7:0] $end
+$var wire 8 7 expB [7:0] $end
+$var wire 8 8 expA [7:0] $end
+$var wire 1 9 done_mult $end
+$var wire 1 : carry $end
+$var wire 32 ; R [31:0] $end
+$var reg 26 < fractOfMenorExp [25:0] $end
+$var reg 26 = fractOfmaiorExp [25:0] $end
+$var reg 8 > maiorExp [7:0] $end
+$var reg 8 ? menorExp [7:0] $end
+$var reg 26 @ possibleExp [25:0] $end
+$var reg 1 A signOfMaiorExp $end
+$var reg 1 B signOfMenorExp $end
+$var reg 9 C totalShiftRight [8:0] $end
+$scope module arredondamento $end
+$var wire 1 D clk $end
+$var wire 8 E exp [7:0] $end
+$var wire 8 F exp_out [7:0] $end
+$var wire 1 G newRound $end
+$var wire 1 H round $end
+$var wire 26 I rounded [25:0] $end
+$var wire 26 J normFract [25:0] $end
+$var wire 8 K normExp [7:0] $end
+$var wire 26 L newRounded [25:0] $end
+$var wire 26 M fract_out [25:0] $end
+$var wire 26 N fract [25:0] $end
+$var wire 1 O carry $end
+$scope module normalizer $end
+$var wire 1 O carry $end
+$var wire 1 D clk $end
+$var wire 8 P possibleExp [7:0] $end
+$var wire 26 Q possibleFract [25:0] $end
+$var wire 26 R fractNormalized [25:0] $end
+$var wire 8 S expNormalized [7:0] $end
+$upscope $end
+$upscope $end
+$scope module fpuc $end
+$var wire 1 ! done $end
+$var wire 2 T op [1:0] $end
+$var wire 1 A signOfMaiorExp $end
+$var wire 1 B signOfMenorExp $end
+$var wire 1 ( start $end
+$var wire 1 9 done_mult $end
+$var reg 1 / start_mult $end
+$var reg 2 U ula_cmd [1:0] $end
+$upscope $end
+$scope module normalizer $end
+$var wire 1 % clk $end
+$var wire 8 V possibleExp [7:0] $end
+$var wire 26 W possibleFract [25:0] $end
+$var wire 26 X fractNormalized [25:0] $end
+$var wire 8 Y expNormalized [7:0] $end
+$var wire 1 : carry $end
+$upscope $end
+$scope module shifterRight $end
+$var wire 26 Z a [25:0] $end
+$var wire 1 [ lado $end
+$var wire 26 \ out [25:0] $end
+$var wire 9 ] shift [8:0] $end
+$var wire 1 . stick $end
+$var wire 26 ^ rightShift [25:0] $end
+$var wire 26 _ forStick [25:0] $end
+$upscope $end
+$scope module ula_mult $end
+$var wire 26 ` a [25:0] $end
+$var wire 26 a b [25:0] $end
+$var wire 1 % clk $end
+$var wire 2 b cmd [1:0] $end
+$var wire 1 / start $end
+$var wire 26 c sum [25:0] $end
+$var wire 26 d result [25:0] $end
+$var wire 26 e maior [25:0] $end
+$var wire 1 9 done $end
+$var wire 1 : carry $end
+$var reg 26 f menor [25:0] $end
+$var reg 26 g multiplicacao [25:0] $end
+$var reg 26 h regA [25:0] $end
+$var reg 26 i regB [25:0] $end
+$upscope $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+bx i
+bx h
+bx g
+bx f
+bx e
+bx d
+bx c
+bx b
+bx a
+bx `
+bx _
+bx ^
+bx ]
+bx \
+0[
+bx Z
+bx Y
+bx X
+bx W
+bx V
+bx U
+bx T
+bx S
+bx R
+bx Q
+bx P
+xO
+bx N
+bx M
+bx L
+bx K
+bx J
+bx I
+xH
+xG
+bz F
+bx E
+zD
+bx C
+xB
+xA
+bx @
+bx ?
+bx >
+bx =
+bx <
+bzxxxxxxxxxxxxxxxxxxxxxxxxxx ;
+x:
+x9
+bx 8
+bx 7
+bx 6
+bx 5
+bx 4
+bx 3
+bx 2
+bx 1
+x0
+x/
+x.
+bx -
+bz ,
+bx +
+bx *
+bx )
+x(
+x'
+bx &
+x%
+bx $
+bx #
+bzxxxxxxxxxxxxxxxxxxxxxxxxxx "
+z!
+$end
+#1000
+b10000000000000000000000000 L
+0G
+bz10000000000000000000000000 "
+bz10000000000000000000000000 ;
+b10000000000000000000000000 1
+b10000000000000000000000000 M
+b10000000000000000000000000 J
+b10000000000000000000000000 R
+b1111111 K
+b1111111 S
+b10000000000000000000000000 I
+b10000000000000000000000000 Q
+0O
+0H
+b10000000000000000000000000 5
+b10000000000000000000000000 X
+b10000000000000000000000000 2
+b10000000000000000000000000 N
+b10000000000000000000000000 W
+b10000000000000000000000000 d
+b1111111 6
+b1111111 Y
+b10000000000000000000000000 c
+0:
+0.
+00
+b1000000000000000000000000 3
+b1000000000000000000000000 `
+b1000000000000000000000000 4
+b1000000000000000000000000 \
+b1000000000000000000000000 ^
+b0 _
+b1111111 7
+b1111111 8
+b1 -
+b1 U
+b1 b
+0/
+b1111111 @
+0A
+0B
+b1000000000000000000000000 =
+b1000000000000000000000000 a
+b1000000000000000000000000 <
+b1000000000000000000000000 Z
+b1111111 >
+b1111111 E
+b1111111 P
+b1111111 V
+b1111111 ?
+b0 C
+b0 ]
+b111111101000000000000000000000 $
+b111111101000000000000000000000 *
+b111111101000000000000000000000 #
+b111111101000000000000000000000 )
+b0 &
+b0 +
+b0 T
+1(
+0'
