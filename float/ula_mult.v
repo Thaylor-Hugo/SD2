@@ -8,18 +8,18 @@
 module ula_mult (
     input clk,
     input start,
-    input [25:0] a,
-    input [25:0] b,
+    input [26:0] a,
+    input [26:0] b,
     input [1:0] cmd,              // 10 e sub, 1 se soma, 0 se mult
     output done,
     output carry,
-    output [25:0] result
+    output [26:0] result
 );
 
-reg [25:0] multiplicacao;
-reg [25:0] regA, regB;
-reg [25:0] menor;
-wire [25:0] maior;
+reg [26:0] multiplicacao;
+reg [26:0] regA, regB;
+reg [26:0] menor;
+wire [26:0] maior;
 
 always @(posedge start) begin
     regA <= a;
@@ -41,10 +41,12 @@ end
 
 assign done = (menor == 0)? 1'b1 : 1'b0;
 
-wire [25:0] sum;
+wire [26:0] sum;
+wire [26:0] sub;
 
 assign {carry, sum} = a + b;
+assign sub = a - b;
 
-assign result = (cmd)? sum : multiplicacao;
+assign result = (cmd == 2'b10)? sub: (cmd == 2'b01)? sum : multiplicacao;
 
 endmodule

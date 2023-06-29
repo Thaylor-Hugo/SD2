@@ -1,27 +1,30 @@
 module arredondamento (
-    input [25:0] fract,
+    input [26:0] fract,
     input [7:0] exp,
-    output [25:0] fract_out,
+    output [26:0] fract_out,
     output [7:0] exp_out
 );
     wire round = fract[2] & (fract[3] || (fract[0] || fract[1]));
     wire carry;
-    wire [25:0] rounded;
+    wire [26:0] rounded;
     
     // Round number
-    assign {carry, rounded} = (round)? fract + 3'b100 : {1'b0, fract};
+    assign {carry, rounded} = (round)? fract + 4'b1000 : {1'b0, fract};
 
     // If carry, normalize again
     wire [7:0] normExp;
-    wire [25:0] normFract;
-    normalizer normalizer (clk, carry, rounded, exp, normFract, normExp);
-    
+    wire [26:0] normFract;
+
+    assign normExp = (carry)? exp + 1'b1 : exp;
+    assign normFract = (carry)? rounded >> 1'b1 : rounded;
+
     // Round after normalized
     wire newRound = normFract[2] & (normFract[3] || (normFract[0] || normFract[1]));
-    wire [25:0] newRounded = (newRound)? normFract + 3'b100 : {1'b0, normFract};
+    wire [25:0] newRounded = (newRound)? normFract + 4'b1000 : {1'b0, normFract};
 
     // output
     assign fract_out = (carry)? newRounded : rounded;
+    assign exp_out = normExp;
     
     // wire [25:0] aux_fract;
     
