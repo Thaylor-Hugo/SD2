@@ -218,7 +218,7 @@ module fp_dp (
     wire stick;
     shifter shifterRight (fractOfMenorExp, totalShiftRight, 1'b0, stick, fractOfMenorExpShifed);
 
-    wire [26:0] normFract = {fractOfMenorExpShifed[26:1], stick};
+    wire [26:0] normFract = {fractOfMenorExpShifed[26:0]};
 
     wire carry;
     wire [26:0] result_ula;
@@ -294,7 +294,7 @@ module ula_mult (
     wire [26:0] sub;
 
     assign {carry, sum} = a + b;
-    assign sub = a - b;
+    assign sub = (a > b)? a - b : b - a;
 
     assign result = (cmd == 2'b10)? sub: (cmd == 2'b01)? sum : multiplicacao;
 endmodule
@@ -371,7 +371,7 @@ module arredondamento (
     output reg [26:0] fract_out,
     output reg [7:0] exp_out );
 
-    wire round = fract[2] & (fract[3] || (fract[0] || fract[1]));
+    wire round = fract[2];
     wire carry;
     wire [26:0] rounded;
     
@@ -386,7 +386,7 @@ module arredondamento (
     assign normFract = (carry)? rounded >> 1'b1 : rounded;
 
     // Round after normalized
-    wire newRound = normFract[2] & (normFract[3] || (normFract[0] || normFract[1]));
+    wire newRound = normFract[2];
     wire [25:0] newRounded = (newRound)? normFract + 4'b1000 : {1'b0, normFract};
 
     // output
