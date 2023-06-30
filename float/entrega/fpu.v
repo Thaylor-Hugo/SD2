@@ -5,16 +5,16 @@
 // Alejandro Larrea - 13791522  
 // Data: 30/06
 
-// Float Point Unit
+// Float Point Unit - Top level module
 module fpu (
     input clk,
-    input rst,
-    input [31:0] A,
-    input [31:0] B, 
-    output [31:0] R,
-    input [1:0] op,
-    input start,
-    output done
+    input rst,  // Reset assincrono
+    input [31:0] A, // Entrada 1
+    input [31:0] B, // Entrada 2
+    output [31:0] R,    // Resultado
+    input [1:0] op,     // Operação: 2'b00 == sum, 2'b01 == sub, 2'b10 = mult
+    input start,        // Start flag - posedge start -> done = 0 (Mudança de entrada com start 1 pode alterar operandos, com start 0 operandos não se alteram com novaas entradas)
+    output done         // 1: Marca final da operação, permanece em um até mudança do start
 );
     wire [1:0] ula_cmd;
     wire diferenSigns;
@@ -76,7 +76,7 @@ module fp_uc (
             3'b001: begin
                 // Soma ou multiplica fração
                 if (op == 2'b10) begin
-                    ula_cmd = 2'b0;
+                    ula_cmd = 2'b0; // Multiplicação
                 end else begin
                     if (signOfMaiorExp == signOfMenorExp) begin
                         ula_cmd = 2'b01;    // sinais iguais faz soma
@@ -103,9 +103,6 @@ module fp_uc (
                 final = 0;
             end
             3'b011: begin
-                if (doneUla) begin
-                    state = 3'b011;
-                end
                 // Normalize number
                 loadRegs = 0; 
                 startUla = 0;
@@ -143,6 +140,7 @@ module fp_uc (
                 done = 1;
             end
             3'b111: begin
+                // Estado de reset, mantem resultado em zero até um novo start
                 loadRegs = 0; 
                 startUla = 0;
                 normalize = 0;
@@ -190,8 +188,8 @@ module fp_dp (
         if (rst) begin
             menorExp = 0;
             maiorExp = 0;    
-            fractOfMenorExp = 0;  //first: hidden bit | lasts: Guard, round, stick bit
-            fractOfmaiorExp = 0;  //first: hidden bit | lasts: Guard, round, stick bit
+            fractOfMenorExp = 0;
+            fractOfmaiorExp = 0;
             signOfMenorExp = 0;
             signOfMaiorExp = 0;
             possibleExp = 0;
@@ -213,9 +211,9 @@ module fp_dp (
                 signOfMaiorExp = A[31];
             end
             if (op == 2'b10) begin
-                possibleExp = maiorExp + menorExp - 8'd127;
+                possibleExp = maiorExp + menorExp - 8'd127; // Possivel expoente de saida da multiplicação
             end else begin
-                possibleExp = maiorExp;
+                possibleExp = maiorExp; // Possivel expoente de saida da soma
             end
         end 
     end
@@ -237,7 +235,7 @@ module fp_dp (
     // Manda mantissa normalizada pra ula se ADD ou mantissa original se Mult
     wire [26:0] ulaEntry = (op == 2'b10)? fractOfMenorExp : normFract;
 
-    // Soma as frações
+    // Soma as frações ou multiplica
     ula_mult ula_mult (clk, startUla, ulaEntry, fractOfmaiorExp, ula_cmd, doneUla, carry, result_ula);
 
     // Normaliza o numero se hidden bit != 1
@@ -258,7 +256,6 @@ module fp_dp (
                     (diferenSigns)? 1'b1 : 1'b0; // sinal da multiplicacao
 
     // output
-
     always @(posedge final) begin
         floatOut = {signOut, roundedExp, roundedFract[25:3]};
     end
@@ -274,7 +271,7 @@ module ula_mult (
     input [26:0] b,
     input [1:0] cmd,    // 10 e sub, 1 se soma, 0 se mult
     output done,
-    output carry,
+    output carryOut,
     output [26:0] result );
 
     reg [53:0] multiplicacao;
@@ -311,7 +308,7 @@ module ula_mult (
 
     assign {carry, sum} = a + b;
     assign sub = (a > b)? a - b : b - a;
-    assign carry = (cmd == 0)? multiplicacao[53] : carry;
+    wire carryOut = (cmd == 2'b0)? multiplicacao[53] : carry;
 
     assign result = (cmd == 2'b10)? sub: (cmd == 2'b01)? sum : multiplicacao[52:26];
 endmodule
@@ -336,16 +333,18 @@ module normalizer (
     always @(posedge normalize) begin
         // Shift fract até hidden bit == 1 e normalize exp conforme necessario
         if ((op!=2'b10 && carry && !diferenSigns) || (op==2'b10 && carry)) begin
+            // Hidden bit mais pra esqueda do que deveria
             fractNormalized = possibleFract >> 1'b1;
             expNormalized = possibleExp + 1'b1;
         end else begin
+            // Hidden bit mais pra direita do que deveria
             fractNormalized = possibleFract << totalShiftLeft;
             expNormalized = possibleExp - totalShiftLeft;
         end
     end
 endmodule
 
-// Retorna posição do primeiro bit um da entrada a partir do MSB
+// Retorna posição do primeiro bit 1 da entrada a partir do MSB
 module firstSet (
     input [26:0] a,
     output reg [4:0] addr );
@@ -389,7 +388,7 @@ module arredondamento (
     output reg [26:0] fract_out,
     output reg [7:0] exp_out );
 
-    wire round = fract[2];
+    wire round = fract[2];  // Condição de arredondamento
     wire carry;
     wire [26:0] rounded;
     
