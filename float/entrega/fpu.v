@@ -280,7 +280,7 @@ module ula_mult (
     reg [53:0] multiplicacao;
     reg [26:0] menor;
     reg [26:0] maior;
-    reg [5:0] i;
+    reg [4:0] i;        // Qual bit de "menor" estamos analisando
 
     always @(posedge start) begin
         if (a < b) begin
@@ -294,17 +294,17 @@ module ula_mult (
         i <= 0;
     end
 
+    //multiplicação
     always @(posedge clk) begin
-        if (i<27) begin
+        if (i<'d27) begin
             if (menor[i]) begin    
-                multiplicacao <= multiplicacao + (maior << i);
-
+                multiplicacao <= multiplicacao + (maior << i);      
             end
             i <= i+1;
         end
     end
 
-    assign done = (cmd == 2'b0 && i == 27)? 1'b1 : (cmd == 2'b0 && i != 27)? 1'b0 : 1'b1;
+    assign done = (cmd == 2'b0 && i == 'd27)? 1'b1 : (cmd == 2'b0 && i != 'd27)? 1'b0 : 1'b1;
 
     wire [26:0] sum;
     wire [26:0] sub;
@@ -335,10 +335,7 @@ module normalizer (
 
     always @(posedge normalize) begin
         // Shift fract até hidden bit == 1 e normalize exp conforme necessario
-        if (op!=2'b10 && carry && !diferenSigns) begin
-            fractNormalized = possibleFract >> 1'b1;
-            expNormalized = possibleExp + 1'b1;
-        end else if (op==2'b10 && carry) begin
+        if ((op!=2'b10 && carry && !diferenSigns) || (op==2'b10 && carry)) begin
             fractNormalized = possibleFract >> 1'b1;
             expNormalized = possibleExp + 1'b1;
         end else begin
