@@ -28,7 +28,7 @@ module fpu (
     wire toRound;
     wire final;
 
-    fp_uc fp_uc (clk, start, done, op, ula_cmd, signOfMaiorExp, signOfMenorExp, diferenSigns, doneUla, loadRegs, startUla, normalize, toRound, final);
+    fp_uc fp_uc (clk, start, rst, done, op, ula_cmd, signOfMaiorExp, signOfMenorExp, diferenSigns, doneUla, loadRegs, startUla, normalize, toRound, final);
     fp_dp fp_dp (clk, rst, A, B, R, op, ula_cmd, signOfMaiorExp, signOfMenorExp, diferenSigns, doneUla, loadRegs, startUla, normalize, toRound, final);
 
 endmodule
@@ -37,6 +37,7 @@ endmodule
 module fp_uc (
     input clk,
     input start, 
+    input rst,
     output reg done,
     input [1:0] op,
     output reg [1:0] ula_cmd,
@@ -54,10 +55,13 @@ module fp_uc (
 
     reg [2:0] state;
 
-    always @(posedge clk or posedge start) begin
+    always @(posedge clk or posedge start or posedge rst) begin
         if (start) begin
             done = 0;
             state = 0;
+        end
+        if (rst) begin
+            state = 3'b111;
         end
         case (state)
             3'b000: begin
@@ -137,6 +141,12 @@ module fp_uc (
                 toRound = 0;
                 final = 0;
                 done = 1;
+            end
+            3'b111: begin
+                loadRegs = 0; 
+                startUla = 0;
+                normalize = 0;
+                toRound = 0;
             end
             default: begin
                 loadRegs = 0; 
