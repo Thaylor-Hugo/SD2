@@ -221,7 +221,8 @@ module fp_dp (
     end
 
     // Compara expoentes
-    wire [8:0] totalShiftRight = maiorExp - menorExp;
+    wire [8:0] totalShiftRight;
+    assign totalShiftRight = (op == 2'b10)? 0 : maiorExp - menorExp;
 
     // Deixa as duas frações com mesmo expoente
     wire [26:0] fractOfMenorExpShifed;
@@ -243,7 +244,7 @@ module fp_dp (
     wire [7:0] expNormalized; 
     wire [26:0] fractNormalized;
     wire diferenSigns;
-    normalizer normalizer (clk, normalize, carry, diferenSigns, result_ula, possibleExp, fractNormalized, expNormalized);
+    normalizer normalizer (clk, op, normalize, carry, diferenSigns, result_ula, possibleExp, fractNormalized, expNormalized);
 
     // Arredonda o numero
     wire [7:0] roundedExp; 
@@ -276,9 +277,10 @@ module ula_mult (
     output carry,
     output [26:0] result );
 
-    reg [26:0] multiplicacao;
+    reg [53:0] multiplicacao;
     reg [26:0] menor;
     reg [26:0] maior;
+    reg [5:0] i;
 
     always @(posedge start) begin
         if (a < b) begin
@@ -289,29 +291,35 @@ module ula_mult (
             menor <= b;
         end
         multiplicacao <= 0;
+        i <= 0;
     end
 
     always @(posedge clk) begin
-        if (menor > 0) begin
-            multiplicacao <= multiplicacao + maior;
-            menor <= menor - 1'b1;
+        if (i<27) begin
+            if (menor[i]) begin    
+                multiplicacao <= multiplicacao + (maior << i);
+
+            end
+            i <= i+1;
         end
     end
 
-    assign done = (cmd == 2'b0)? (menor == 0)? 1'b1 : 1'b0 : 1'b1;
+    assign done = (cmd == 2'b0 && i == 27)? 1'b1 : (cmd == 2'b0 && i != 27)? 1'b0 : 1'b1;
 
     wire [26:0] sum;
     wire [26:0] sub;
 
     assign {carry, sum} = a + b;
     assign sub = (a > b)? a - b : b - a;
+    assign carry = (cmd == 0)? multiplicacao[53] : carry;
 
-    assign result = (cmd == 2'b10)? sub: (cmd == 2'b01)? sum : multiplicacao;
+    assign result = (cmd == 2'b10)? sub: (cmd == 2'b01)? sum : multiplicacao[52:26];
 endmodule
 
 // Normalizor de float point (força hidden bit == 1)
 module normalizer (
     input clk,
+    input [1:0]op,
     input normalize,
     input carry,
     input diferenSigns,
@@ -327,7 +335,10 @@ module normalizer (
 
     always @(posedge normalize) begin
         // Shift fract até hidden bit == 1 e normalize exp conforme necessario
-        if (carry && !diferenSigns) begin
+        if (op!=2'b10 && carry && !diferenSigns) begin
+            fractNormalized = possibleFract >> 1'b1;
+            expNormalized = possibleExp + 1'b1;
+        end else if (op==2'b10 && carry) begin
             fractNormalized = possibleFract >> 1'b1;
             expNormalized = possibleExp + 1'b1;
         end else begin
